@@ -1,5 +1,6 @@
 #include "utils.h"
 
+t_log* logger;
 
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
@@ -29,13 +30,15 @@ int crear_conexion(char *ip, char* puerto)
 
 	err = getaddrinfo(ip, puerto, &hints, &server_info);
 	if (err != 0){
-		log_info(logger, "ERROR: %s\n", gai_strerror(err)); // getaddrinfo string error
+		//log_info(logger, "ERROR: %s\n", gai_strerror(err)); // getaddrinfo string error
+		printf("ERROR: %s", gai_strerror(err));
+		return -1;
 	};
 
 	// Ahora vamos a crear el socket.
-	int socket_cliente = socket(servinfo->ai_family,
-							 	servinfo->ai_socktype,
-							 	servinfo->ai_protocol);
+	int socket_cliente = socket(server_info->ai_family,
+							 	server_info->ai_socktype,
+							 	server_info->ai_protocol);
 	manejar_error(socket_cliente);
 
 	// Ahora que tenemos el socket, vamos a conectarlo
@@ -117,6 +120,7 @@ void liberar_conexion(int socket_cliente)
 
 void manejar_error(int err){
 	if (err == -1){
-		log_info(logger, "ERROR: %s", strerror(errno));
+		//log_info(logger, "ERROR: %s", strerror(errno));
+		printf("ERROR: %s", strerror(errno));
 	};
 }

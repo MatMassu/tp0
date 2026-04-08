@@ -1,4 +1,4 @@
-#include"utils.h"
+#include "utils.h"
 
 t_log* logger;
 
@@ -47,6 +47,7 @@ int iniciar_servidor(void)
 
 int esperar_cliente(int socket_servidor)
 {
+	int err;
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	// assert(!"no implementado!");
 
@@ -54,7 +55,7 @@ int esperar_cliente(int socket_servidor)
 	int socket_cliente;
 
 	socket_cliente = accept(socket_servidor, NULL, NULL);
-	manejar_error(err);
+	manejar_error(socket_cliente);
 
 	log_info(logger, "Se conecto un cliente!");
 

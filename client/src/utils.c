@@ -18,21 +18,29 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 
 int crear_conexion(char *ip, char* puerto)
 {
+	int err;
 	struct addrinfo hints;
 	struct addrinfo *server_info;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
+	// hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	err = getaddrinfo(ip, puerto, &hints, &server_info);
+	if (err != 0){
+		log_info(logger, "ERROR: %s\n", gai_strerror(err)); // getaddrinfo string error
+	};
 
 	// Ahora vamos a crear el socket.
-	int socket_cliente = 0;
+	int socket_cliente = socket(servinfo->ai_family,
+							 	servinfo->ai_socktype,
+							 	servinfo->ai_protocol);
+	manejar_error(socket_cliente);
 
 	// Ahora que tenemos el socket, vamos a conectarlo
-
+	err = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+	manejar_error(err);
 
 	freeaddrinfo(server_info);
 
@@ -105,4 +113,10 @@ void eliminar_paquete(t_paquete* paquete)
 void liberar_conexion(int socket_cliente)
 {
 	close(socket_cliente);
+}
+
+void manejar_error(int err){
+	if (err == -1){
+		log_info(logger, "ERROR: %s", strerror(errno));
+	};
 }

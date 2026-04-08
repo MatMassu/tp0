@@ -18,7 +18,12 @@ int main(void)
 
 	// Usando el logger creado previamente
 	// Escribi: "Hola! Soy un log"
-
+	if (logger == NULL){
+		printf("ERROR: Log no existente");
+		abort();
+	}
+	log_info(logger, "Soy un Log");
+	
 
 	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
 
@@ -26,10 +31,17 @@ int main(void)
 
 	// Usando el config creado previamente, leemos los valores del config y los 
 	// dejamos en las variables 'ip', 'puerto' y 'valor'
+	if (config == NULL){
+		log_info(logger, "ERROR: Config no existente");
+		abort();
+	}
+	char* clave = config_get_string_value(config, "CLAVE");
 
 	// Loggeamos el valor de config
+	log_info(logger, "Clave: %s", clave);
 
-
+	log_destroy(logger);
+	config_destroy(config);
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
 	leer_consola(logger);
@@ -56,12 +68,16 @@ t_log* iniciar_logger(void)
 {
 	t_log* nuevo_logger;
 
+	nuevo_logger = log_create("tp0.log", "tp0", true, LOG_LEVEL_INFO);
+
 	return nuevo_logger;
 }
 
 t_config* iniciar_config(void)
 {
 	t_config* nuevo_config;
+
+	nuevo_config = config_create("cliente.config");
 
 	return nuevo_config;
 }
